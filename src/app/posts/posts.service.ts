@@ -96,6 +96,10 @@ export class PostsService {
       console.log('ppp',postData);
 
     }
+    // console.log('back', backendUrl);
+    console.log('postData',postData);
+
+
     this.http
       .put(backendUrl+ "posts/" + id, postData)
       .subscribe(response => {

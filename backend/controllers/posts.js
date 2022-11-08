@@ -1,5 +1,5 @@
 const Post = require("../models/post");
-
+const mongoose = require("mongoose");
 exports.createPost = (req, res, next) => {
   const url = req.protocol + "://" + req.get("host");
   const post = new Post({
@@ -8,6 +8,7 @@ exports.createPost = (req, res, next) => {
     imagePath: url + "/images/" + req.file.filename,
     creator: req.userData.userId
   });
+  console.log("ADD POST   -------------------------------------------- ",post)
   post.save().then(createdPost => {
     res.status(201).json({
       message: "Post added successfully",
@@ -26,6 +27,7 @@ exports.createPost = (req, res, next) => {
 
 exports.updatePost =(req, res, next) => {
   let imagePath = req.body.imagePath;
+
   if (req.file) {
     const url = req.protocol + "://" + req.get("host");
     imagePath = url + "/images/" + req.file.filename;
@@ -37,7 +39,9 @@ exports.updatePost =(req, res, next) => {
     imagePath: imagePath,
     creator: req.userData.userId
   });
-  console.log(post,"wkhsghgfjk");
+  // console.log('reque:',req.body);
+  console.log('post:', post);
+
   Post.updateOne(
     { _id: req.params.id, creator: req.userData.userId },
     post
@@ -45,8 +49,11 @@ exports.updatePost =(req, res, next) => {
     console.log(result,"result")
     if (result.modifiedCount > 0) {
       res.status(200).json({ message: "Update successful!" });
+      console.log("postsss", post)
     } else {
       res.status(401).json({ message: "This feature is not for use right now we are working on it." });
+      console.log("postsss", post)
+
     }
   });
 }

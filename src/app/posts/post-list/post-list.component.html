@@ -7,7 +7,7 @@
     <div class="post-image">
       <img [src]="post.imagePath" [alt]="post.title">
     </div>
-    <mat-icon svgIcon="thumbs-up" aria-hidden="false" aria-label="Example thumbs up SVG icon"></mat-icon>
+    <!-- <mat-icon aria-hidden="false" aria-label="Example thumbs up SVG icon"></mat-icon> -->
     <p>{{ post.content }}</p>
     <button class="likeBtn" mat-button color="">Like</button>
     <mat-action-row *ngIf="userIsAuthenticated && userId === post.creator">

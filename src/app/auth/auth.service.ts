@@ -27,7 +27,7 @@ export class AuthService {
   }
 
   getUserId() {
-    console.log(this.userId)
+    // console.log(this.userId)
     return this.userId;
   }
 
@@ -101,7 +101,7 @@ export class AuthService {
   }
 
   private setAuthTimer(duration: number) {
-    console.log("Setting timer: " + duration);
+    // console.log("Setting timer: " + duration);
     this.tokenTimer = setTimeout(() => {
       this.logout();
     }, duration * 1000);

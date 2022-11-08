@@ -1,5 +1,3 @@
-
-
 const path = require("path");
 const express = require('express');
 const bodyParser = require("body-parser");
@@ -12,7 +10,7 @@ const userRoutes = require("./routes/user");
 const app = express();
 mongoose
   .connect(
-    "mongodb+srv://Rishav:qwertyuiop@cluster0.tj2rzbv.mongodb.net/?retryWrites=true&w=majority"
+    "mongodb+srv://Rishav:"+ process.env.MONGO_ATLAS_PW+"@cluster0.tj2rzbv.mongodb.net/?retryWrites=true&w=majority"
   )
   .then(() => {
     console.log("Connected to database!");
@@ -24,6 +22,8 @@ mongoose
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/images", express.static(path.join("backend/images")));
+app.use("/", express.static(path.join(__dirname, "../dist/mean")));
+
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -41,10 +41,12 @@ app.use((req, res, next) => {
 app.use("/api/posts", postsRoutes);
 app.use("/api/user", userRoutes);
 
-module.exports = app;
 
 app.use("/", express.static(path.join(__dirname, "../dist/mean")));
 
 app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, "../dist/mean/index.html"));
 });
+
+
+module.exports = app;
