@@ -74,4 +74,8 @@ posts: Post[] = [];
     this.postsSub.unsubscribe();
     this.authStatusSub.unsubscribe();
   }
+
+  onLike(){
+    alert("This Feature is not available");
+  }
 }

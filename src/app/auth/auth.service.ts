@@ -40,7 +40,7 @@ export class AuthService {
     return this.http
       .post(backendUrl+ "user/signup", authData)
       .subscribe(() => {
-        this.router.navigate(["/"]);
+        this.router.navigate(["/Login"]);
       }, error =>{
         this.authStatusListener.next(false);
       });
