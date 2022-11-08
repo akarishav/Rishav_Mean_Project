@@ -1,0 +1,13 @@
+mat-form-field{
+  width: 100%;
+}
+
+mat-progress-spinner{
+  margin: auto;
+}
+
+.login-form{
+  display: flex;
+  flex-direction: column;
+  padding: 50px;
+}
