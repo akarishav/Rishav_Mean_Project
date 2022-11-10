@@ -9,7 +9,30 @@
     </div>
     <!-- <mat-icon aria-hidden="false" aria-label="Example thumbs up SVG icon"></mat-icon> -->
     <p>{{ post.content }}</p>
-    <button class="likeBtn" mat-button color="" (click)="onLike()">Like</button>
+
+
+
+    <button *ngIf="userIsAuthenticated && post.likedby.includes(this.userId)" mat-icon-button color="warn"
+      aria-label="Example icon-button with a heart icon" (click)="onLike(post)">
+      <mat-icon>favorite</mat-icon>
+      {{post.likedby.length}}
+      <!-- {{post.likedby.length+1}} -->
+    </button>
+    <button *ngIf="userIsAuthenticated && !post.likedby.includes(this.userId)" mat-icon-button color="white"
+      aria-label="Example icon-button with a heart icon" (click)="onLike(post)">
+      <mat-icon>favorite</mat-icon>
+      {{post.likedby.length}}
+    </button>
+    <!-- <p>{{likeCount}}</p> -->
+
+    <!-- <div>
+      <button *ngIf="!like" mat-icon-button color="warn" aria-label="Example icon button with a heart icon"
+        (click)="onLike()">
+        <mat-icon>favorite</mat-icon>
+      </button>
+    </div> -->
+
+
     <mat-action-row *ngIf="userIsAuthenticated && userId === post.creator">
       <a mat-button color="primary" [routerLink]="['/edit', post.id]">EDIT</a>
       <button mat-button color="warn" (click)="onDelete(post.id)">DELETE</button>

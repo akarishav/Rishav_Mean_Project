@@ -12,7 +12,7 @@ const backendUrl = environment.apiUrl;
 @Injectable({ providedIn: "root" })
 export class PostsService {
   private posts: Post[] = [];
-  private postsUpdated = new Subject<{ posts: Post[]; postCount: number }>();
+  private postsUpdated = new Subject<{ post: Post[]; postCount: number }>();
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -32,7 +32,8 @@ export class PostsService {
                 content: post.content,
                 id: post._id,
                 imagePath: post.imagePath,
-                creator: post.creator
+                creator: post.creator,
+                likedby: post.likedby,
               };
             }),
             maxPosts: postData.maxPosts
@@ -42,7 +43,7 @@ export class PostsService {
       .subscribe(transformedPostData => {
         this.posts = transformedPostData.posts;
         this.postsUpdated.next({
-          posts: [...this.posts],
+          post: [...this.posts],
           postCount: transformedPostData.maxPosts
         });
       });
@@ -59,6 +60,7 @@ export class PostsService {
       content: string;
       imagePath: string;
       creator: string;
+      likedby: string[];
     }>(backendUrl+ "posts/" + id);
   }
 
@@ -77,7 +79,8 @@ export class PostsService {
       });
   }
 
-  updatePost(id: string, title: string, content: string, image: File | string) {
+  updatePost(id: string, title: string, content: string, image: File | string, likedby: string[]
+    ) {
     let postData: Post | FormData;
     if (typeof image === "object") {
       postData = new FormData();
@@ -85,6 +88,7 @@ export class PostsService {
       postData.append("title", title);
       postData.append("content", content);
       postData.append("image", image, title);
+      postData.append('likedby', JSON.stringify(likedby));
     } else {
       postData = {
         id: id,
@@ -92,6 +96,7 @@ export class PostsService {
         content: content,
         imagePath: image,
         creator: null,
+        likedby: likedby
       };
       console.log('ppp',postData);
 
@@ -106,6 +111,36 @@ export class PostsService {
         this.router.navigate(["/"]);
       });
   }
+
+  likePost(post: Post, likedbyUserId: string, posts: Post[]) {
+    const id = post.id;
+    let likedData = {
+      _id: post.id,
+      title: post.title,
+      content: post.content,
+      imagePath: post.imagePath,
+      creator: post.creator,
+      likedbyArr: post.likedby,
+      likedby: likedbyUserId,
+      posts: posts,
+    };
+
+    this.http
+      .put<{ message: string; posts: Post[]; maxPosts: number }>(
+        backendUrl + 'posts/like/' + id,
+        likedData
+      )
+      .subscribe((result) => {
+        this.postsUpdated.next({
+          post: result.posts,
+          postCount: result.maxPosts,
+        });
+        console.log(result);
+
+        this.router.navigate(['/']);
+      });
+  }
+
 
   deletePost(postId: string) {
     console.log(postId);

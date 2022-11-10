@@ -11,6 +11,9 @@ const router = express.Router();
 
 router.post("", checkAuth, extractFile, PostController.createPost);
 
+router.put("/like/:id", checkAuth, extractFile, PostController.likePost);
+
+
 router.put( "/:id", checkAuth, extractFile, PostController.updatePost);
 
 router.get("", PostController.getPosts);

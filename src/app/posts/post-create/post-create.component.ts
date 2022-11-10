@@ -47,7 +47,8 @@ export class PostCreateComponent {
             title: postData.title,
             content: postData.content,
             imagePath: postData.imagePath,
-            creator: postData.creator
+            creator: postData.creator,
+            likedby: postData.likedby
           };
           this.form.setValue({
             title: this.post.title,
@@ -79,10 +80,12 @@ export class PostCreateComponent {
     }
     this.isLoading = true;
     if (this.mode === "create") {
+
+
       this.postsService.addPost(
         this.form.value.title,
         this.form.value.content,
-        this.form.value.image
+        this.form.value.image,
       );
     } else {
       this.postsService.updatePost(
@@ -90,6 +93,7 @@ export class PostCreateComponent {
         this.form.value.title,
         this.form.value.content,
         this.form.value.image,
+        this.post.likedby
         // null
       );
     }

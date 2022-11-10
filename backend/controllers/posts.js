@@ -1,14 +1,16 @@
 const Post = require("../models/post");
 const mongoose = require("mongoose");
+
 exports.createPost = (req, res, next) => {
   const url = req.protocol + "://" + req.get("host");
   const post = new Post({
     title: req.body.title,
     content: req.body.content,
     imagePath: url + "/images/" + req.file.filename,
-    creator: req.userData.userId
+    creator: req.userData.userId,
+    likedby: []
   });
-  console.log("ADD POST   -------------------------------------------- ",post)
+  // console.log("ADD POST   -------------------------------------------- ",post)
   post.save().then(createdPost => {
     res.status(201).json({
       message: "Post added successfully",
@@ -37,9 +39,10 @@ exports.updatePost =(req, res, next) => {
     title: req.body.title,
     content: req.body.content,
     imagePath: imagePath,
-    creator: req.userData.userId
+    creator: req.userData.userId,
+    likedby: req.body.likedby
   });
-  // console.log('reque:',req.body);
+  console.log('reque:',req.body);
   console.log('post:', post);
 
   Post.updateOne(
@@ -57,6 +60,69 @@ exports.updatePost =(req, res, next) => {
     }
   });
 }
+
+exports.likePost = (req, res, next) => {
+  let finalLikedArray = [...req.body.likedbyArr];
+  // console.log(req.body.likedbyArr)
+
+  const indexOf = finalLikedArray.indexOf(req.body.likedby);
+
+
+  if (indexOf >= 0) finalLikedArray.splice(indexOf, 1);
+  else finalLikedArray.push(req.body.likedby);
+
+  const post = new Post({
+    _id: req.body._id,
+    title: req.body.title,
+    content: req.body.content,
+    imagePath: req.body.imagePath,
+    creator: req.body.creator,
+    likedby: finalLikedArray
+  });
+  // console.log("postasdfghjk", post);
+  let updatedPostCount;
+  Post.updateOne({ _id: req.body._id }, post)
+    .then((result) => {
+      console.log("result ",result);
+      updatedPostCount = result.modifiedCount;
+    })
+
+    .then((res) => {
+      return Post.count();
+    })
+    .then((result) => {
+      if (updatedPostCount === 1) {
+        const uPost = {
+          id: req.body._id,
+          title: req.body.title,
+          content: req.body.content,
+          imagePath: req.body.imagePath,
+          creator: req.body.creator,
+          likedby: finalLikedArray
+        };
+
+        let updatedPost = req.body.posts.map((p) => {
+          if (p.id === uPost.id) {
+            return uPost;
+          } else return p;
+        });
+        console.log(" Posts ",req.body.posts)
+        console.log("updated Post ",updatedPost)
+        res.status(200).json({
+          message: "Update successful,liked",
+          posts: updatedPost,
+          maxPosts: result,
+        });
+      } else {
+        let updatedPost = [...req.body.posts];
+        res.status(401).json({
+          message: "like failed,user not authorized",
+          post: updatedPost,
+          maxPosts: result,
+        });
+      }
+    });
+};
 
 exports.getPosts = (req, res, next) => {
   const pageSize = +req.query.pagesize;

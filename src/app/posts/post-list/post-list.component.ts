@@ -21,14 +21,17 @@ export class PostListComponent implements OnInit, OnDestroy {
 
 posts: Post[] = [];
   isLoading = false;
-  totalPosts = 0;
-  postsPerPage = 2;
+  totalPosts = 10;
+  postsPerPage = 5;
   currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10];
+  likeCount = 0;
+  likedby = [];
   userIsAuthenticated = false;
   userId: string;
   private postsSub: Subscription;
   private authStatusSub: Subscription;
+  public like : boolean=false;
 
 
   constructor(public postsService: PostsService, private authService: AuthService) {}
@@ -39,10 +42,10 @@ posts: Post[] = [];
     this.postsService.getPosts(this.postsPerPage, this.currentPage);
     this.postsSub = this.postsService
       .getPostUpdateListener()
-      .subscribe((postData: {posts: Post[], postCount: number}) => {
+      .subscribe((postData: {post: Post[], postCount: number}) => {
         this.isLoading = false;
         this.totalPosts = postData.postCount;
-        this.posts = postData.posts;
+        this.posts = postData.post;
         this.userId = this.authService.getUserId();
 
         // console.log(this.userId);
@@ -61,6 +64,8 @@ posts: Post[] = [];
     this.currentPage = pageData.pageIndex + 1;
     this.postsPerPage = pageData.pageSize;
     this.postsService.getPosts(this.postsPerPage, this.currentPage);
+    // console.log('poststst',this.postsService.getPosts);
+
   }
 
   onDelete(postId: string) {
@@ -75,7 +80,36 @@ posts: Post[] = [];
     this.authStatusSub.unsubscribe();
   }
 
-  onLike(){
-    alert("This Feature is not available");
-  }
+//   onLike(){
+//     this.like = !this.like;
+//     const userId = localStorage.getItem('userId');
+
+//     // console.log('user',userId);
+//     // console.log('like',this.like);
+//     if (this.like){
+//       console.log("Liked");
+//       this.likeCount++;
+//       this.likedby.push(userId);
+//       // console.log(this.likeCount);
+
+//     }else{
+//       console.log('unliked');
+//       if (this.likedby.includes(userId)){
+//         this.likedby.splice(0);
+//       }
+//       // this.likeCount--;
+//     }
+//     console.log(this.likedby);
+//   }
+
+
+onLike(post: Post) {
+  console.log('Liked post', post);
+  console.log('Posts', this.posts);
+
+  this.like = !this.like;
+  const userId = localStorage.getItem('userId');
+  this.postsService.likePost(post, userId, this.posts);
+  // console.log(post, userId);
+}
 }
